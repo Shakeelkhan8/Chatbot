@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Web\Billing\BillingController;
@@ -82,30 +80,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::post('/stripe/webhook', StripeWebhookController::class)->name('stripe.webhook');
-
-/*
-|--------------------------------------------------------------------------
-| Deferred: care marketplace (doctors / appointments / hospitals)
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', 'verified', 'onboarded', 'feature:care_marketplace'])->group(function () {
-    Route::post('search-nearest-hospitals', [MainController::class, 'searchhospitals'])->name('search-hospitals');
-
-    Route::prefix('doctors')->group(function () {
-        Route::get('all', [DoctorController::class, 'index'])->name('all-doctors');
-        Route::get('create', [DoctorController::class, 'create'])->name('create-doctor');
-        Route::post('store', [DoctorController::class, 'store'])->name('store-doctor');
-        Route::post('add-feedback', [DoctorController::class, 'addFeedback'])->name('add-feedback');
-        Route::get('edit/{id}', [DoctorController::class, 'edit'])->name('edit-doctor');
-        Route::post('update/{id}', [DoctorController::class, 'update'])->name('update-doctor');
-        Route::get('delete/{id}', [DoctorController::class, 'destroy'])->name('delete-doctor');
-        Route::get('view/{id}', [DoctorController::class, 'show'])->name('show-doctor');
-    });
-
-    Route::resource('appointment', AppointmentController::class);
-    Route::get('/appointment-success', [AppointmentController::class, 'appointmentSuccess'])->name('appointment.success');
-    Route::get('/appointment-cancel', [AppointmentController::class, 'appointmentCancel'])->name('appointment.cancel');
-    Route::get('/all-appointments', [AppointmentController::class, 'show'])->name('appointment.all');
-});
 
 require __DIR__.'/auth.php';

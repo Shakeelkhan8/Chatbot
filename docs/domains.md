@@ -42,5 +42,3 @@ Legacy marketplace models remain in `app/Models` until migrated or removed.
 - Doctor marketplace  
 - Hospital finder / appointments  
 - Clinical diagnosis / medical decision support  
-
-Gate: `FEATURE_CARE_MARKETPLACE=false`.

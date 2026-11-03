@@ -20,7 +20,7 @@ Infrastructure (AI clients, Stripe, mail, storage)
 1. Controllers orchestrate HTTP only — no business rules.
 2. Actions/Services own use-cases (onboarding, check-in, coach reply, billing webhook).
 3. Domain never imports Infrastructure HTTP clients directly — use contracts.
-4. Feature flags in `config/mentor.php` gate deferred modules (`care_marketplace`).
+4. Feature flags in `config/mentor.php` switch whole modules on and off (`ai_coach`, `habit_tracking`, `weekly_plans`, `subscriptions`).
 
 ## Domains
 

@@ -1,93 +1,76 @@
-@extends('backend_app.layouts.template')
-@section('content')
-<div class="layout-page">
-    @include('backend_app.layouts.nav')
-    <div class="content-wrapper">
-        <div class="container-xxl flex-grow-1 container-p-y">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="card">
-                        <div class="card-body p-4 p-md-5">
-                            <h3 class="mb-1">Welcome to {{ $productName }}</h3>
-                            <p class="text-muted mb-4">
-                                Tell us what you want to improve. We’ll personalize your coaching focus and create starter habits.
-                            </p>
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Welcome to {{ $productName }}</h2>
+        <p class="mt-1 text-sm text-gray-600">
+            Tell us what you want to improve. We’ll personalize your coaching focus and create starter habits.
+        </p>
+    </x-slot>
 
-                            <div class="alert alert-warning" role="alert">
-                                {{ $disclaimer }}
-                            </div>
+    <div class="py-8">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <x-alert type="warning">{{ $disclaimer }}</x-alert>
 
-                            @if ($errors->any())
-                                <div class="alert alert-danger">
-                                    <ul class="mb-0">
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
+            @if ($errors->any())
+                <x-alert type="error">
+                    <ul class="list-disc ps-5 space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </x-alert>
+            @endif
 
-                            <form method="POST" action="{{ route('onboarding.store') }}">
-                                @csrf
+            <x-card>
+                <form method="POST" action="{{ route('onboarding.store') }}" class="space-y-6">
+                    @csrf
 
-                                <div class="mb-4">
-                                    <label class="form-label fw-semibold">What do you want to focus on?</label>
-                                    <div class="row g-2">
-                                        @foreach ($focusAreas as $area)
-                                            <div class="col-md-6">
-                                                <div class="form-check border rounded-3 p-3 h-100">
-                                                    <input
-                                                        class="form-check-input ms-0 me-2"
-                                                        type="checkbox"
-                                                        name="focus_areas[]"
-                                                        id="focus_{{ $area->value }}"
-                                                        value="{{ $area->value }}"
-                                                        @checked(collect(old('focus_areas', $profile?->focus_areas ?? []))->contains($area->value))
-                                                    >
-                                                    <label class="form-check-label" for="focus_{{ $area->value }}">
-                                                        {{ $area->label() }}
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-
-                                <div class="mb-4">
-                                    <label for="primary_goal" class="form-label fw-semibold">Your primary goal</label>
-                                    <textarea
-                                        class="form-control"
-                                        id="primary_goal"
-                                        name="primary_goal"
-                                        rows="3"
-                                        maxlength="500"
-                                        placeholder="Example: Build a consistent sleep routine and reduce late-night scrolling."
-                                        required
-                                    >{{ old('primary_goal', $profile?->primary_goal) }}</textarea>
-                                </div>
-
-                                <div class="mb-4">
-                                    <label for="timezone" class="form-label fw-semibold">Timezone</label>
-                                    <select class="form-select" id="timezone" name="timezone">
-                                        @foreach ($timezones as $timezone)
-                                            <option value="{{ $timezone }}" @selected($timezone === old('timezone', $selectedTimezone))>
-                                                {{ $timezone }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <div class="form-text">Used for daily check-ins and reminders later.</div>
-                                </div>
-
-                                <button type="submit" class="btn btn-primary">
-                                    Start coaching
-                                </button>
-                            </form>
+                    <fieldset>
+                        <legend class="block font-medium text-sm text-gray-700">What do you want to focus on?</legend>
+                        <div class="mt-2 grid gap-2 sm:grid-cols-2">
+                            @foreach ($focusAreas as $area)
+                                <label for="focus_{{ $area->value }}" class="flex items-center gap-3 rounded-md border border-gray-200 p-3 hover:bg-gray-50">
+                                    <input
+                                        type="checkbox"
+                                        class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                        name="focus_areas[]"
+                                        id="focus_{{ $area->value }}"
+                                        value="{{ $area->value }}"
+                                        @checked(collect(old('focus_areas', $profile?->focus_areas ?? []))->contains($area->value))
+                                    >
+                                    <span class="text-sm text-gray-800">{{ $area->label() }}</span>
+                                </label>
+                            @endforeach
                         </div>
+                    </fieldset>
+
+                    <div>
+                        <x-input-label for="primary_goal" value="Your primary goal" />
+                        <textarea
+                            id="primary_goal"
+                            name="primary_goal"
+                            rows="3"
+                            maxlength="500"
+                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            placeholder="Example: Build a consistent sleep routine and reduce late-night scrolling."
+                            required
+                        >{{ old('primary_goal', $profile?->primary_goal) }}</textarea>
                     </div>
-                </div>
-            </div>
-            @include('backend_app.layouts.footer')
+
+                    <div>
+                        <x-input-label for="timezone" value="Timezone" />
+                        <select id="timezone" name="timezone" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            @foreach ($timezones as $timezone)
+                                <option value="{{ $timezone }}" @selected($timezone === old('timezone', $selectedTimezone))>
+                                    {{ $timezone }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <p class="mt-1 text-sm text-gray-500">Used for daily check-ins and reminders later.</p>
+                    </div>
+
+                    <x-primary-button>Start coaching</x-primary-button>
+                </form>
+            </x-card>
         </div>
     </div>
-</div>
-@endsection
+</x-app-layout>

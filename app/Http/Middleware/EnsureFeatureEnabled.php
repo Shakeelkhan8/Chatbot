@@ -11,7 +11,7 @@ class EnsureFeatureEnabled
     /**
      * Ensure a named feature flag from config/mentor.php is enabled.
      *
-     * Usage: middleware('feature:care_marketplace')
+     * Usage: middleware('feature:weekly_plans')
      */
     public function handle(Request $request, Closure $next, string $feature): Response
     {

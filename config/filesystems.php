@@ -55,14 +55,6 @@ return [
             'throw' => true,
         ],
 
-        'doctor_photos' => [
-            'driver' => 'local',
-            'root' => public_path('assets/doctors'),
-            'url' => env('APP_URL').'/assets/doctors',
-            'visibility' => 'public',
-            'throw' => true,
-        ],
-
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

@@ -1,90 +1,69 @@
-@extends('backend_app.layouts.template')
-@section('content')
-<div class="layout-page">
-    @include('backend_app.layouts.nav')
-    <div class="content-wrapper">
-        <div class="container-xxl flex-grow-1 container-p-y">
-            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
-                <div>
-                    <h3 class="mb-1">Weekly Plan</h3>
-                    <p class="text-muted mb-0">
-                        Week of {{ $weekStart }} · {{ $timezone }}
-                        @if($profile?->primary_goal)
-                            · Goal: {{ $profile->primary_goal }}
-                        @endif
-                    </p>
-                </div>
-                <form method="POST" action="{{ route('plans.weekly.generate') }}">
-                    @csrf
-                    <button type="submit" class="btn btn-primary">
-                        {{ $plan ? 'Regenerate plan' : 'Generate plan' }}
-                    </button>
-                </form>
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+            <div>
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">Weekly Plan</h2>
+                <p class="mt-1 text-sm text-gray-600">
+                    Week of {{ $weekStart }} · {{ $timezone }}
+                    @if($profile?->primary_goal)
+                        · Goal: {{ $profile->primary_goal }}
+                    @endif
+                </p>
             </div>
+            <form method="POST" action="{{ route('plans.weekly.generate') }}">
+                @csrf
+                <x-primary-button>{{ $plan ? 'Regenerate plan' : 'Generate plan' }}</x-primary-button>
+            </form>
+        </div>
+    </x-slot>
 
-            @if (session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
+    <div class="py-8">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             @if ($errors->any())
-                <div class="alert alert-danger">{{ $errors->first() }}</div>
+                <x-alert type="error">{{ $errors->first() }}</x-alert>
             @endif
 
-            <div class="alert alert-warning">
-                {{ $planDisclaimer }}
-            </div>
+            <x-alert type="warning">{{ $planDisclaimer }}</x-alert>
 
             @if (! ($hasActiveSubscription ?? false) && config('mentor.features.subscriptions'))
-                <div class="alert alert-primary d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <x-alert type="info" class="flex flex-wrap items-center justify-between gap-2">
                     <span>Enjoying personalized plans? Pro checkout is available in test mode — nothing is locked yet.</span>
-                    <a href="{{ route('billing.show') }}" class="btn btn-sm btn-primary">View Pro</a>
-                </div>
+                    <a href="{{ route('billing.show') }}" class="font-medium underline">View Pro</a>
+                </x-alert>
             @endif
 
-            @if ($plan)
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h4 class="mb-2">{{ $plan->title }}</h4>
-                        <p class="mb-3">{{ $plan->summary }}</p>
-                        <div class="text-muted small mb-3">
-                            Status: {{ $plan->status->value }}
-                            @if($plan->generated_at)
-                                · Generated {{ $plan->generated_at->diffForHumans() }}
-                            @endif
-                        </div>
+            <x-card>
+                @if ($plan)
+                    <h3 class="text-lg font-medium text-gray-900">{{ $plan->title }}</h3>
+                    <p class="mt-2 text-gray-700">{{ $plan->summary }}</p>
+                    <p class="mt-2 text-sm text-gray-500">
+                        Status: {{ $plan->status->value }}
+                        @if($plan->generated_at)
+                            · Generated {{ $plan->generated_at->diffForHumans() }}
+                        @endif
+                    </p>
 
-                        <div class="list-group">
-                            @foreach (($plan->items ?? []) as $item)
-                                <div class="list-group-item">
-                                    <div class="d-flex flex-wrap justify-content-between gap-2">
-                                        <div>
-                                            <div class="fw-semibold">{{ $item['action'] ?? '' }}</div>
-                                            <div class="small text-muted">{{ $item['target'] ?? '' }}</div>
-                                        </div>
-                                        <span class="badge bg-label-primary align-self-start text-uppercase">
-                                            {{ $item['category'] ?? 'habit' }}
-                                        </span>
-                                    </div>
+                    <ul class="mt-4 divide-y divide-gray-200 rounded-md border border-gray-200">
+                        @foreach (($plan->items ?? []) as $item)
+                            <li class="flex flex-wrap justify-between gap-2 p-4">
+                                <div>
+                                    <div class="font-medium text-gray-900">{{ $item['action'] ?? '' }}</div>
+                                    <div class="text-sm text-gray-500">{{ $item['target'] ?? '' }}</div>
                                 </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            @else
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <p class="mb-0 text-muted">
-                            No plan for this week yet. Generate a personalized plan based on your goals, focus areas, and habits.
-                        </p>
-                    </div>
-                </div>
-            @endif
+                                <span class="self-start rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium uppercase text-indigo-700">
+                                    {{ $item['category'] ?? 'habit' }}
+                                </span>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p class="text-sm text-gray-500">
+                        No plan for this week yet. Generate a personalized plan based on your goals, focus areas, and habits.
+                    </p>
+                @endif
+            </x-card>
 
-            <div class="alert alert-secondary mb-0">
-                {{ $disclaimer }}
-            </div>
-
-            @include('backend_app.layouts.footer')
+            <p class="text-sm text-gray-500">{{ $disclaimer }}</p>
         </div>
     </div>
-</div>
-@endsection
+</x-app-layout>
