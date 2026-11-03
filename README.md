@@ -107,4 +107,4 @@ The earlier doctor, hospital and appointment code was removed rather than kept b
 
 The application code in this repository is released under the [MIT License](LICENSE).
 
-Third-party code keeps its own license and is not covered by this one. In particular, the admin UI under `public/assets/` is built on the Vuexy theme by Pixinvent and the front-end libraries bundled with it. Composer and npm dependencies (including the Laravel framework) are installed separately under their own licenses.
+Third-party code keeps its own license and is not covered by this one: the front-end libraries vendored under `public/assets/` for the marketing pages (Bootstrap, jQuery, Popper, Owl Carousel, AOS, Swiper), and the Composer and npm dependencies (including the Laravel framework), which are installed separately.

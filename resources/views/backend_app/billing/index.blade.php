@@ -1,69 +1,54 @@
-@extends('backend_app.layouts.template')
-@section('content')
-<div class="layout-page">
-    @include('backend_app.layouts.nav')
-    <div class="content-wrapper">
-        <div class="container-xxl flex-grow-1 container-p-y">
-            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
-                <div>
-                    <h3 class="mb-1">{{ $productName }} Subscription</h3>
-                    <p class="text-muted mb-0">Unlock ongoing personalized coaching with a Pro subscription (Stripe test mode).</p>
-                </div>
-            </div>
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ $productName }} Subscription</h2>
+        <p class="mt-1 text-sm text-gray-600">Unlock ongoing personalized coaching with a Pro subscription (Stripe test mode).</p>
+    </x-slot>
 
-            @if (session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
+    <div class="py-8">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             @if ($errors->any())
-                <div class="alert alert-danger">{{ $errors->first() }}</div>
+                <x-alert type="error">{{ $errors->first() }}</x-alert>
             @endif
 
-            <div class="card mb-4">
-                <div class="card-body">
-                    @if ($subscription)
-                        <h5 class="mb-2">Status: {{ $subscription->status->value }}</h5>
-                        <p class="mb-1 text-muted">Plan is active for your account.</p>
-                        @if ($subscription->current_period_ends_at)
-                            <p class="mb-0 small">Current period ends {{ $subscription->current_period_ends_at->toDayDateTimeString() }}</p>
-                        @endif
-                    @else
-                        <h5 class="mb-2">Free experience</h5>
-                        <p class="mb-2 text-muted">
-                            Habit check-ins and weekly plans are included, plus {{ config('mentor.limits.free_coach_messages_per_day') }} AI coach messages a day.
-                        </p>
-                        <h6 class="mb-2">Pro subscription</h6>
-                        <p class="mb-3 text-muted">
-                            Unlimited AI coach messages. Subscribe via Stripe Checkout (test mode).
-                        </p>
+            <x-card>
+                @if ($subscription)
+                    <h3 class="text-lg font-medium text-gray-900">Status: {{ $subscription->status->value }}</h3>
+                    <p class="mt-1 text-gray-600">Plan is active for your account.</p>
+                    @if ($subscription->current_period_ends_at)
+                        <p class="mt-1 text-sm text-gray-500">Current period ends {{ $subscription->current_period_ends_at->toDayDateTimeString() }}</p>
+                    @endif
+                @else
+                    <h3 class="text-lg font-medium text-gray-900">Free experience</h3>
+                    <p class="mt-1 text-gray-600">
+                        Habit check-ins and weekly plans are included, plus {{ config('mentor.limits.free_coach_messages_per_day') }} AI coach messages a day.
+                    </p>
+
+                    <h4 class="mt-6 font-medium text-gray-900">Pro subscription</h4>
+                    <p class="mt-1 text-gray-600">Unlimited AI coach messages. Subscribe via Stripe Checkout (test mode).</p>
+
+                    <div class="mt-4">
                         @if ($priceConfigured)
                             <form method="POST" action="{{ route('billing.checkout') }}">
                                 @csrf
-                                <button type="submit" class="btn btn-primary">Subscribe with Stripe (test mode)</button>
+                                <x-primary-button>Subscribe with Stripe (test mode)</x-primary-button>
                             </form>
                         @else
-                            <div class="alert alert-warning mb-0">
+                            <x-alert type="warning">
                                 Stripe price is not configured. Set <code>STRIPE_PRICE_ID</code> (and test keys) in your environment.
-                            </div>
+                            </x-alert>
                         @endif
-                    @endif
-                </div>
-            </div>
+                    </div>
+                @endif
+            </x-card>
 
             @if ($latestSubscription && ! $subscription)
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <div class="text-muted small">Latest subscription status</div>
-                        <div class="fw-semibold">{{ $latestSubscription->status->value }}</div>
-                    </div>
-                </div>
+                <x-card>
+                    <div class="text-sm text-gray-500">Latest subscription status</div>
+                    <div class="font-medium text-gray-900">{{ $latestSubscription->status->value }}</div>
+                </x-card>
             @endif
 
-            <div class="alert alert-secondary mb-0">
-                {{ $disclaimer }}
-            </div>
-
-            @include('backend_app.layouts.footer')
+            <p class="text-sm text-gray-500">{{ $disclaimer }}</p>
         </div>
     </div>
-</div>
-@endsection
+</x-app-layout>

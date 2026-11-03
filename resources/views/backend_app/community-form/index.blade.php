@@ -1,65 +1,36 @@
-@extends('backend_app.layouts.template')
-@section('content')
-@php
-    $auth_id=Auth::user()->id;
-@endphp
-<div class="layout-page">
-    <!-- Navbar -->
-    @include('backend_app.layouts.nav')
-    <!-- / Navbar -->
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Contact messages</h2>
+    </x-slot>
 
-    <!-- Content wrapper -->
-    <div class="content-wrapper">
-      <!-- Content -->
-      <div class="container-xxl flex-grow-1 container-p-y">
-        <h4 class="py-3 mb-4"><span class="text-dark fw-dark">Doctors List</h4>
-
-        <!-- DataTable with Buttons -->
-        <div class="card">
-            <div class="table-responsive text-nowrap">
-                <table class="table">
-                    <thead>
-                        <tr class="text-nowrap">
-                         
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone no</th>
-                            <th>Message</th>
-
+    <div class="py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="overflow-x-auto bg-white shadow-sm sm:rounded-lg">
+                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <thead class="bg-gray-50 text-left text-gray-600">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 font-medium">Name</th>
+                            <th scope="col" class="px-4 py-3 font-medium">Email</th>
+                            <th scope="col" class="px-4 py-3 font-medium">Phone</th>
+                            <th scope="col" class="px-4 py-3 font-medium">Message</th>
                         </tr>
                     </thead>
-                    <tbody id="table-body">
-                    @foreach ($forms as $key => $item)
-                        <tr>
-                        
-                            <td style="width:20%;">
-                                <div class="avatar avatar-sm pull-up">
-                                 {{ $item->name }}
-                                </div>
-                            </td>
-                            <td>{{ $item->email }}</td>
-                            <td>{{ $item->phone }}</td>
-                            <td>{{ $item->message }}</td>
-                           
-                          
-        
-                            
-                        </tr>
-                    @endforeach
+                    <tbody class="divide-y divide-gray-100 text-gray-800">
+                        @forelse ($forms as $item)
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap">{{ $item->name }}</td>
+                                <td class="px-4 py-3 whitespace-nowrap">{{ $item->email }}</td>
+                                <td class="px-4 py-3 whitespace-nowrap">{{ $item->phone }}</td>
+                                <td class="px-4 py-3">{{ $item->message }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-4 py-6 text-center text-gray-500">No messages yet.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
-        <!--/ DataTable with Buttons -->
-      </div>
-      <!-- / Content -->
-
-      <!-- Footer -->
-      @include('backend_app.layouts.footer')
-      <div class="content-backdrop fade"></div>
     </div>
-    <!-- Content wrapper -->
-</div>
-
-
-@endsection
+</x-app-layout>

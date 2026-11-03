@@ -209,6 +209,28 @@ class ProfileTest extends TestCase
             ->assertSee('The img field must be a file of type: jpg, jpeg, png, gif, webp.');
     }
 
+    public function test_country_chosen_on_the_profile_form_is_saved_and_shown_again(): void
+    {
+        $user = $this->onboardedUser();
+
+        // The form used to post the field as "conutry", so the controller never saw a country.
+        $this->actingAs($user)
+            ->get('/edit-profile')
+            ->assertOk()
+            ->assertSee('name="country"', false);
+
+        $this->actingAs($user)
+            ->from('/edit-profile')
+            ->post('/profile', $this->profileData($user, ['country' => 'Pakistan']))
+            ->assertRedirect('/edit-profile');
+
+        $this->assertSame('Pakistan', $user->fresh()->country);
+
+        $this->actingAs($user->fresh())
+            ->get('/edit-profile')
+            ->assertSee('<option value="Pakistan" selected>', false);
+    }
+
     private function profileData(User $user, array $overrides = []): array
     {
         return array_merge(['name' => $user->name, 'email' => $user->email], $overrides);

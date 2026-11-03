@@ -1,95 +1,52 @@
-@extends('backend_app.layouts.auth_template')
-@section('content')
-<div class="authentication-wrapper authentication-cover authentication-bg">
-    <div class="authentication-inner row">
-      <!-- /Left Text -->
-      <div class="d-none d-lg-flex col-lg-7 p-0" >
-        <div class="auth-cover-bg  d-flex justify-content-center align-items-center">
-          <img
-            src="{{asset('assets/images/ai-images/andrea-de-santis-zwd435-ewb4-unsplash.jpg')}}"
-            alt="auth-login-cover"
-            class="w-50 rounded-3 "
-            />
+<x-guest-layout>
+    <h1 class="text-lg font-medium text-gray-900">Sign in</h1>
+    <p class="mt-1 mb-6 text-sm text-gray-600">Welcome back to {{ config('mentor.name') }}.</p>
 
-          <img
-            src="../../assets/img/illustrations/bg-shape-image-light.png"
-            alt="auth-login-cover"
-            class="platform-bg"
-            data-app-light-img="illustrations/bg-shape-image-light.png"
-            data-app-dark-img="illustrations/bg-shape-image-dark.png" />
-        </div>
-      </div>
-      <!-- /Left Text -->
-
-      <!-- Login -->
-
-      <div class="d-flex col-12 col-lg-5 align-items-center p-sm-5 p-4">
-        <div class="w-px-400 mx-auto">
-          <h3 class="mb-1">Welcome to {{ config('mentor.name') }}! 👋</h3>
-          <p class="mb-4">Please sign in to your account and start the adventure</p>
-
-          @if (config('mentor.demo.enabled'))
-            <form method="POST" action="{{ route('demo.login') }}" class="mb-4">
-              @csrf
-              <button type="submit" class="btn btn-label-primary d-grid w-100">Try the demo (no signup)</button>
-              <small class="text-muted d-block mt-1">Opens a shared account with sample habits, plans and coach chat.</small>
-            </form>
-          @endif
-
-          <form method="POST" action="{{ route('login') }}" class="mb-3">
+    @if (config('mentor.demo.enabled'))
+        <form method="POST" action="{{ route('demo.login') }}" class="mb-6">
             @csrf
-            <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input
-                type="email"
-                class="form-control"
-                id="email"
-                name="email"
-                value="{{ old('email') }}"
-                placeholder="Enter your email"
-                autofocus />
-                @error('email')
-                <span class="text-danger">{{$message}}</span>
-                @enderror
-            </div>
-            <div class="mb-3 form-password-toggle">
-              <div class="d-flex justify-content-between">
-                <label class="form-label" for="password">Password</label>
-                <a href="{{route('password.request')}}">
-                  <small>Forgot Password?</small>
-                </a>
-              </div>
-              <div class="input-group input-group-merge">
-                <input
-                  type="password"
-                  id="password"
-                  class="form-control"
-                  name="password"
-                  placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                  aria-describedby="password" />
-                <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
-              </div>
-              @error('password')
-              <span class="text-danger">{{$message}}</span>
-              @enderror
-            </div>
-            <div class="mb-3">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="remember-me" name="remember" />
-                <label class="form-check-label" for="remember-me"> Remember Me </label>
-              </div>
-            </div>
-            <div class="mb-3">
-              <a href="{{ route('register') }}">
-                <small>Don't have an account? Sign up</small>
-              </a>
-            </div>
-            <button type="submit" class="btn btn-primary d-grid w-100">Sign in</button>
-          </form>
-        </div>
-      </div>
-      <!-- /Login -->
-    </div>
-  </div>
+            <button type="submit" class="w-full rounded-md border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100">
+                Try the demo (no signup)
+            </button>
+            <p class="mt-1 text-xs text-gray-500">Opens a shared account with sample habits, plans and coach chat.</p>
+        </form>
+    @endif
 
-@endsection
+    <!-- Session Status -->
+    <x-auth-session-status class="mb-4" :status="session('status')" />
+
+    <form method="POST" action="{{ route('login') }}">
+        @csrf
+
+        <!-- Email Address -->
+        <div>
+            <x-input-label for="email" :value="__('Email')" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        </div>
+
+        <!-- Password -->
+        <div class="mt-4">
+            <x-input-label for="password" :value="__('Password')" />
+            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
+            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        </div>
+
+        <!-- Remember Me -->
+        <div class="block mt-4">
+            <label for="remember_me" class="inline-flex items-center">
+                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
+                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+            </label>
+        </div>
+
+        <div class="flex items-center justify-between mt-4">
+            <div class="flex flex-col gap-1 text-sm">
+                <a class="text-gray-600 underline hover:text-gray-900" href="{{ route('password.request') }}">{{ __('Forgot your password?') }}</a>
+                <a class="text-gray-600 underline hover:text-gray-900" href="{{ route('register') }}">{{ __('Create an account') }}</a>
+            </div>
+
+            <x-primary-button class="ms-3">{{ __('Log in') }}</x-primary-button>
+        </div>
+    </form>
+</x-guest-layout>
