@@ -26,15 +26,13 @@ return [
     |--------------------------------------------------------------------------
     | Feature flags
     |--------------------------------------------------------------------------
-    | care_marketplace = doctors, appointments, hospitals (deferred)
-    | core coaching features stay enabled for MVP.
+    | Core coaching features stay enabled for the MVP.
     */
     'features' => [
         'ai_coach' => env('FEATURE_AI_COACH', true),
         'habit_tracking' => env('FEATURE_HABIT_TRACKING', true),
         'weekly_plans' => env('FEATURE_WEEKLY_PLANS', true),
         'subscriptions' => env('FEATURE_SUBSCRIPTIONS', true),
-        'care_marketplace' => env('FEATURE_CARE_MARKETPLACE', false),
     ],
 
     /*

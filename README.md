@@ -62,7 +62,6 @@ Requires PHP **8.2 or newer** (CI runs on 8.4) and Node.js for the Vite build.
 | `FEATURE_HABIT_TRACKING` | Habit check-ins |
 | `FEATURE_WEEKLY_PLANS` | Weekly plans |
 | `FEATURE_SUBSCRIPTIONS` | Billing UI |
-| `FEATURE_CARE_MARKETPLACE` | Doctors/hospitals (**keep `false`**) |
 | `RAPIDAPI_KEY` | AI coach provider |
 | `STRIPE_KEY` / `STRIPE_SECRET` | Stripe test keys |
 | `STRIPE_WEBHOOK_SECRET` | Webhook verification (required outside local/testing) |
@@ -102,7 +101,7 @@ The daily allowance resets at midnight in the user's timezone and is set by `FRE
 - Clinical diagnosis  
 - Medical decision support  
 
-Legacy marketplace code remains feature-flagged off (`FEATURE_CARE_MARKETPLACE=false`).
+The earlier doctor, hospital and appointment code was removed rather than kept behind a flag.
 
 ## License
 
