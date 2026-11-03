@@ -8,6 +8,19 @@ It is **not** a generic chatbot. It remembers user goals and focus areas, tracks
 
 > AI Mentor Health provides general wellness guidance and does not diagnose conditions or replace medical professionals.
 
+## What's worth reading
+
+The backend parts that are easy to get wrong, each with the tests that pin it down:
+
+| What | Code | Tests |
+|------|------|-------|
+| **Stripe webhooks safe against redelivery and reordering.** The event id is recorded with `insertOrIgnore` in the same transaction as the change, and an older event can't overwrite newer subscription state. | [`HandleStripeWebhook`](app/Domains/Billing/Actions/HandleStripeWebhook.php) | [`StripeWebhookDeliveryTest`](tests/Feature/Billing/StripeWebhookDeliveryTest.php) |
+| **Plan limits decided in one place.** Free users get a daily number of AI messages that resets at midnight in their own timezone; Pro is unlimited. | [`Entitlements`](app/Domains/Billing/Services/Entitlements.php) | [`CoachDailyLimitTest`](tests/Feature/Coaching/CoachDailyLimitTest.php) |
+| **AI calls kept out of database transactions.** The provider call holds no locks; if it fails after retries, nothing is saved and no quota is used, and the failure is logged with the user and conversation. | [`SendCoachMessage`](app/Domains/Coaching/Actions/SendCoachMessage.php) | [`SendCoachMessageReliabilityTest`](tests/Feature/Coaching/SendCoachMessageReliabilityTest.php) |
+| **Concurrent writes that stay correct on PostgreSQL.** When another request inserts the same day's check-in or the same week's plan first, the losing request updates that row instead of failing, and only one row remains. | Habits and Plans actions | [`ConcurrentWritesTest`](tests/Feature/ConcurrentWritesTest.php) |
+
+CI runs the suite on SQLite and PostgreSQL, plus Larastan (level 5) and Pint, on every pull request.
+
 ## Why this project
 
 Portfolio + MVP foundation for a B2C wellness product:
@@ -15,7 +28,7 @@ Portfolio + MVP foundation for a B2C wellness product:
 - Domain-oriented Laravel architecture (Identity, Coaching, Habits, Plans, Billing)
 - Swappable AI provider via `AiCoachClient`
 - Stripe Checkout + webhooks for subscriptions
-- Feature flags for deferred care-marketplace modules
+- Feature flags that switch whole modules on and off
 
 ## Core product loop
 
